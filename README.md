@@ -1,5 +1,6 @@
 # BibliotecaASPNETMVC
 
- Aplicação ASP .NET MVC
-  - Materialize
+ Aplicação para uma biblioteca utilizando
+  - ASP .NET MVC
   - Entity Framework
+  - Materialize
