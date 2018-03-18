@@ -1,4 +1,5 @@
 ﻿using BibliotecaASP.DataContext;
+using BibliotecaASP.Helpers;
 using BibliotecaASP.Models;
 using System;
 using System.Collections.Generic;
@@ -15,49 +16,21 @@ namespace BibliotecaASP.Controllers
         // GET: Livro
         public ActionResult Index()
         {
-            List<Livro> lLivro = new List<Livro>();
-            lLivro = db.Livros.ToList();
-
-            return View(lLivro);
+            return View();
         }
 
         // GET: Livro/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details()
         {
-            return View();
+            List<Livro> livro = db.Livros.ToList();
+            return View(livro);
         }
 
         // GET: Livro/Create
         public ActionResult Create()
         {
-            List<Autor> lAutores = new List<Autor>();
-            lAutores = db.Autores.ToList();
-
-            List<SelectListItem> listaAutores = lAutores.ConvertAll(a =>
-            {
-                return new SelectListItem()
-                {
-                    Text = a.Nome,
-                    Value = a.Id.ToString(),
-                    Selected = false
-                };
-            });
-
-            List<Categoria> lCategorias = new List<Categoria>();
-            lCategorias = db.Categorias.ToList();
-
-            List<SelectListItem> listaCategorias = lCategorias.ConvertAll(a =>
-            {
-                return new SelectListItem()
-                {
-                    Text = a.Nome,
-                    Value = a.Id.ToString(),
-                    Selected = false
-                };
-            });
-
-            @ViewBag.Autores = listaAutores;
-            ViewBag.Categorias = listaCategorias;
+            @ViewBag.Autores = RetornaSelectListItem.Autores();
+            @ViewBag.Categorias = RetornaSelectListItem.Categorias();
             return View();
         }
 
@@ -73,6 +46,8 @@ namespace BibliotecaASP.Controllers
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
+                @ViewBag.Autores = RetornaSelectListItem.Autores();
+                @ViewBag.Categorias = RetornaSelectListItem.Categorias();
                 return View(livro);                
             }
             catch
