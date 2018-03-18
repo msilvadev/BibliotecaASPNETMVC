@@ -1,4 +1,5 @@
-﻿using BibliotecaASP.Models;
+﻿using BibliotecaASP.DataContext;
+using BibliotecaASP.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +10,15 @@ namespace BibliotecaASP.Controllers
 {
     public class LivroController : Controller
     {
+        private BibliotecaDB db = new BibliotecaDB();  
+
         // GET: Livro
         public ActionResult Index()
         {
-            List<Livro> Livros = new List<Livro>();
-            Livros.Add(new Livro()
-                {
-                    Id = 05,
-                    Nome = "Meu Primeiro Livro"
-                });
-            return View(Livros);
+            List<Livro> lLivro = new List<Livro>();
+            lLivro = db.Livros.ToList();
+
+            return View(lLivro);
         }
 
         // GET: Livro/Details/5
@@ -30,6 +30,34 @@ namespace BibliotecaASP.Controllers
         // GET: Livro/Create
         public ActionResult Create()
         {
+            List<Autor> lAutores = new List<Autor>();
+            lAutores = db.Autores.ToList();
+
+            List<SelectListItem> listaAutores = lAutores.ConvertAll(a =>
+            {
+                return new SelectListItem()
+                {
+                    Text = a.Nome,
+                    Value = a.Id.ToString(),
+                    Selected = false
+                };
+            });
+
+            List<Categoria> lCategorias = new List<Categoria>();
+            lCategorias = db.Categorias.ToList();
+
+            List<SelectListItem> listaCategorias = lCategorias.ConvertAll(a =>
+            {
+                return new SelectListItem()
+                {
+                    Text = a.Nome,
+                    Value = a.Id.ToString(),
+                    Selected = false
+                };
+            });
+
+            @ViewBag.Autores = listaAutores;
+            ViewBag.Categorias = listaCategorias;
             return View();
         }
 
@@ -39,9 +67,13 @@ namespace BibliotecaASP.Controllers
         {
             try
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Livros.Add(livro);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                return View(livro);                
             }
             catch
             {
