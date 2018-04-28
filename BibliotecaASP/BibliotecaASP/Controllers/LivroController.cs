@@ -3,7 +3,9 @@ using BibliotecaASP.Helpers;
 using BibliotecaASP.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -59,18 +61,39 @@ namespace BibliotecaASP.Controllers
         // GET: Livro/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            if (id.Equals(0))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Livro livro = db.Livros.Find(id);
+
+            @ViewBag.Autores = RetornaSelectListItem.Autores();
+            @ViewBag.Categorias = RetornaSelectListItem.Categorias();
+
+
+
+            return View(livro);
         }
 
         // POST: Livro/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(Livro livro)
         {
             try
             {
-                // TODO: Add update logic here
+                if (ModelState.IsValid)
+                {
+                    db.Entry(livro).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Details");
+                }
 
-                return RedirectToAction("Index");
+                @ViewBag.Autores = RetornaSelectListItem.Autores();
+                @ViewBag.Categorias = RetornaSelectListItem.Categorias();
+
+                return View(livro);
+
             }
             catch
             {
